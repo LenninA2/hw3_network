@@ -46,7 +46,7 @@ int main(void) {
   udp_packet[7] = checksum & 0xff;
 
   // simulate a network packet loss (via a bit flip)
-  udp_packet[17] ^= 0x01;
+  udp_packet[17] ^= 0x02;
 
   // calculate the checksum again
   checksum = compute_checksum(udp_packet, 21);
@@ -59,6 +59,13 @@ int main(void) {
            udp_packet[6], udp_packet[7], (checksum >> 8) & 0xff,
            checksum & 0xff);
   }
+
+  // Print data portion as char*
+  printf("Data: ");
+  for (uint32_t i = 8; i < 21; i++) {
+    printf("%c", udp_packet[i]);
+  }
+  printf("\n");
 
   return 0;
 }
