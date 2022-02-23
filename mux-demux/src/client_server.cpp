@@ -47,6 +47,61 @@ int main(int arcg, char **argv) {
   // Write a loop to send all valid messages to the server from the client and
   // receive the response from the server. The client should be the one to
   // print the responses (server doesn't print anything!).
+  for (auto i = 0; i < responses.size(); i++) {
+    auto m = Message(client.ip_addr, CLIENT_APP_PORT, server.ip_addr,
+                     SERVER_APP_PORT, std::to_string(i));
+    server.messages.push(m);
+  }
+
+  // Forward server messages to to correct app
+  while (!server.messages.empty()) {
+    auto message = server.messages.front();
+    server.messages.pop();
+
+    for (auto &app : server.apps) {
+      if (app.ip_addr == message.receiver_ip_addr &&
+          app.port == message.receiver_port) {
+        app.messages.push(message);
+      }
+    }
+  }
+
+  // Each app on server reads the message(s) from the queue
+  for (auto &app : server.apps) {
+    while (!app.messages.empty()) {
+      auto message = app.messages.front();
+      app.messages.pop();
+
+      if (app.port == SERVER_APP_PORT) {
+        int id = std::stoi(message.content);
+        client.messages.push(Message(server.ip_addr, SERVER_APP_PORT,
+                                     client.ip_addr, CLIENT_APP_PORT,
+                                     responses[id]));
+      }
+    }
+  }
+
+  // Client forwards messages to correct app
+  for (auto &app : client.apps) {
+    while (!client.messages.empty()) {
+      auto message = client.messages.front();
+      client.messages.pop();
+
+      if (app.ip_addr == message.receiver_ip_addr &&
+          app.port == message.receiver_port) {
+        app.messages.push(message);
+      }
+    }
+  }
+
+  // Each app on client reads the message(s) from the queue
+  for (auto &app : client.apps) {
+    while (!app.messages.empty()) {
+      auto message = app.messages.front();
+      app.messages.pop();
+      std::cout << message.content << std::endl;
+    }
+  }
 
   return 0;
 }

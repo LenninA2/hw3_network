@@ -14,9 +14,9 @@ int main(int argc, char *argv[]) {
   }
   auto host = argv[1];
   asio::error_code error;
-  std::array<uint8_t, 1> send;
-  std::array<uint8_t, 1> recv;
-  for (int i = 0; i < 8; ++i) {
+  std::array<uint32_t, 1> send;
+  std::array<uint32_t, 1> recv;
+  for (int i = 0; i < 1024; ++i) {
     tcp::resolver::results_type endpoints = resolver.resolve(host, "3000");
     asio::connect(socket, endpoints);
     send[0] = i;

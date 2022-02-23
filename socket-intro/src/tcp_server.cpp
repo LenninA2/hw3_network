@@ -10,8 +10,8 @@ int main() {
   asio::io_context io_context;
   tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), 3000));
   asio::error_code error;
-  std::array<uint8_t, 1> send;
-  std::array<uint8_t, 1> recv;
+  std::array<uint32_t, 1> send;
+  std::array<uint32_t, 1> recv;
   while (true) {
     tcp::socket socket(io_context);
     acceptor.accept(socket);

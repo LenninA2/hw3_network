@@ -39,6 +39,8 @@ int main(int arcg, char **argv) {
                                HOST_B_APP_1, "Hello, world"));
   host_b.messages.push(Message(host_a.ip_addr, HOST_A_APP_1, host_b.ip_addr,
                                HOST_B_APP_2, "20"));
+  host_b.messages.push(Message(host_a.ip_addr, HOST_A_APP_1, host_b.ip_addr,
+                               HOST_B_APP_1, "20"));
 
   // host b reads the message(s) from the queue
   while (!host_b.messages.empty()) {
