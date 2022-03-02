@@ -46,7 +46,7 @@ int main(void) {
   udp_packet[7] = checksum & 0xff;
 
   // simulate a network packet loss (via a bit flip)
-  udp_packet[17] ^= 0x02;
+  // udp_packet[17] ^= 0x02;
 
   // calculate the checksum again
   checksum = compute_checksum(udp_packet, 21);

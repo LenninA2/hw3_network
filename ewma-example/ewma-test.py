@@ -13,8 +13,8 @@ def ewma(data, weight):
 sample_rtt = np.random.randint(100, 300, 1000).astype('f')
 sample_rtt += np.linspace(0, 100, 1000)
 
-alpha = float(argv[1])
-beta = float(argv[2])
+alpha = 0.125
+beta = 0.125
 est_rtt = ewma(sample_rtt, alpha)
 dev_rtt = ewma(np.abs(sample_rtt - est_rtt), beta)
 timeout = est_rtt + 4*dev_rtt
