@@ -86,8 +86,6 @@ class CongestedConnection(Connection):
             if tick > self.ticks - self.lookback_window:
                 weighted_RTT += 1
         
-        print(weighted_RTT)
-
         # weight by congestion factor
-        RTT = max(1, round(weighted_RTT * self.congestion_factor))
+        RTT = max(1, round(weighted_RTT ** self.congestion_factor))
         return RTT
