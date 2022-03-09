@@ -2,7 +2,7 @@ import conn
 from packet_data import packets
 
 if __name__=='__main__':
-    pconn = conn.CongestedConnection(congestion_factor=0.1, lookback_window=10)
+    pconn = conn.CongestedConnection(congestion_factor=10, lookback_window=10)
     ack_packets = set()
     send_idx = 0
 
