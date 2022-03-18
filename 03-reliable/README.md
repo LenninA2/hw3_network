@@ -8,4 +8,4 @@ Since this is another client-server application, running `make` will generate tw
 You will only need to modify `client.cpp` to get this project running. (no server modification allowed!) 
 
 ### Next steps
-As menetioned in the write-up, you can pass flags to the server to help in debugging. `./server --no-delay` disables delay and `./server --no-packet-loss` disables packet loss. You can also use both debug options at the same time `./server --no-delay --no-packet-loss`. Note that your client must run without these debug flags enabled! 
+As menetioned in the write-up, you can pass flags to the server to help in debugging. `./server --no-delay` disables delay and `./server --no-packet-loss` disables packet loss. You can also use both debug options at the same time `./server --no-delay --no-packet-loss`. Note that your client must produce the correct output *without* these debug flags enabled for full credit! 
