@@ -65,7 +65,7 @@ def get_packet_route(packet, network_map, max_hops=8):
 
 # match functions (add some more!)
 def match_dst_port_22(packet):
-    return packet.dst_port == 22
+    return packet.dst_port == '22'
 
 def match_dst_ip_0001(packet):
     return packet.dst_ip == '0001'
