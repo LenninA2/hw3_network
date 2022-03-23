@@ -2,7 +2,7 @@ import conn
 from packet_data import packets
 
 if __name__=='__main__':
-    pconn = conn.PerfectConnection(RTT=1)
+    pconn = conn.PerfectConnection(RTT=50)
     ack_packets = set()
     send_idx = 0
 

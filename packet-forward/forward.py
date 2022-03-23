@@ -57,5 +57,5 @@ if __name__=='__main__':
     # after that is working, implement the second network_map and uncomment the following lines
     network_map = {} # TODO: implement network_map
 
-    get_packet_route('0000', '1000', network_map)
+    get_packet_route('0000', '0111', network_map)
     get_packet_route('0100', '0101', network_map)
