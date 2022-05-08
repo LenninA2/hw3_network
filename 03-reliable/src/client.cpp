@@ -1,45 +1,17 @@
 #include <asio.hpp>
+#include <chrono>
 #include <iostream>
 #include <fstream>
+#include <sstream> 
 #include "../include/sender.hpp"
-#include <list>
-#include <map>
-#include <chrono>
-#include <thread>
 
-
-using asio::ip::tcp;
-using namespace std::literals::chrono_literals;
+#define NUM 10
 using namespace std;
 
-
-void print_map(map<int,string> myMap) {
-  for (auto& t : myMap) {
-    std::cout << t.first << "\n";
-              // << t.second << "\n";
-  }
-}
-
-
-void timer() 
-{
-
-  auto start = std::chrono::high_resolution_clock::now();
-  std::this_thread::sleep_for(1s);
-  auto end = std::chrono::high_resolution_clock::now();
-
-  std::chrono::duration<float> duration = end - start;
-  cout << duration.count() << endl;
-
-  std::cin.get();
-}
-
+using asio::ip::tcp;
 
 int main() {
-
-  // Create a "context" - essentially the platform interface 
   asio::io_context io_context;
-
   Sender sender(io_context, "127.0.0.1", "3000");
 
   // An explanation of the API
@@ -52,59 +24,49 @@ int main() {
   // ./server --no-delay --no-packet-drops which makes the below code work
 
   // As an example, you could start by requesting the first 10 messages
+  
+  cout << "hello" << endl;
+  ofstream outfile("../data/gilgamesh_tcp.txt");
+  auto request_start = std::chrono::high_resolution_clock::now();
+  int32_t count = 0;
+  string data_str[NUM];
+  
+  bool is_received[NUM] = {};
+  for (int i = 0; i < NUM; i++)
+    sender.request_msg(i);
 
+  auto start = std::chrono::high_resolution_clock::now();
 
-  // int32_t curr_msg = 0;
-  // for (int i = 0; i < 10; i++) {
-
-  //   //maybe add a timeout here? 
-  // sender.request_msg(i);
-  // curr_msg++;
-  // }
-  //setting up output file
-
-  ofstream outFile ("../data/gilgamesh_tcp.txt");
-
-
-  map<int, string> received_packets;
-
-  //timeout
-
-  int count = 0;
   while (true) {
-    sender.request_msg(count);
     if (sender.data_ready()) {
-
-      // Get a response Msg:
-      // A Msg has a msg_id (corresponds to id in request_msg) and
-      // a char array of CHUNK_SIZE (128) storing the data
       auto msg = sender.get_msg();
+      if(msg.msg_id < count)
+        continue;
+      data_str[msg.msg_id % NUM] = string(msg.data.data(), CHUNK_SIZE);
+      is_received[msg.msg_id % NUM] = true;
 
-      cout << to_string(count) << ": message that was requested: " << to_string(msg.msg_id) << endl;
-
-      // Eventually, you will combine these chunks to write the file
-      auto data_str = string(msg.data.data(), CHUNK_SIZE);
-
-      received_packets.insert(pair<int, string>(msg.msg_id, data_str));
-
-
-      // Print the msg id and message recieved (may be out of order)
-      //cout << "msg_id(" << msg.msg_id << ")::" << data_str << endl;
+      while(is_received[count % NUM]){
+        start = std::chrono::high_resolution_clock::now();
+        outfile << data_str[count % NUM];
+        is_received[count % NUM] = false;
+        count += 1;
+        if(count + NUM < NUM_MSGS)
+          sender.request_msg(count + NUM - 1);
+        if(count == NUM_MSGS - 1)
+          goto END;
+      }
     }
-
-    if (received_packets.size() == 10){
-      break;
-    } 
-    count++;
-
-    if(count < 852 ){
-      break;
+    
+    auto rtt = std::chrono::high_resolution_clock::now() - start;
+    if(std::chrono::duration_cast<std::chrono::milliseconds>(rtt).count() > 550){
+      sender.request_msg(count);
+      
+      start = std::chrono::high_resolution_clock::now();
     }
   }
-
-  //print_map(received_packets);
-  
-  outFile.close();
-
+  END:
+  outfile.close();
+  auto request_time = std::chrono::high_resolution_clock::now() - request_start;
+  std::cout << "Time: " << std::chrono::duration_cast<std::chrono::seconds>(request_time).count() << std::endl;
   return 0;
 }
